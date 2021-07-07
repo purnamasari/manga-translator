@@ -6,14 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:layout_margin="12dp"
-        android:id="@+id/main_btn"
-        android:text="anjeng"
-        android:layout_centerInParent="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <com.wiryaimd.mangatranslator.CustomImg
+            android:id="@+id/main_custom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp">
 
-    </Button>
+        </com.wiryaimd.mangatranslator.CustomImg>
+
+        <ImageView
+            android:id="@+id/main_show"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_below="@id/main_custom"
+            android:layout_margin="12dp"
+            android:scaleType="centerCrop">
+
+        </ImageView>
+
+        <Button
+            android:id="@+id/main_choose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_show"
+            android:layout_margin="12dp"
+            android:text="Choose">
+
+        </Button>
+
+        <Button
+            android:id="@+id/main_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="12dp"
+            android:text="Save">
+
+        </Button>
+
+        <Button
+            android:id="@+id/main_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_save"
+            android:layout_margin="12dp"
+            android:text="anjeng">
+
+        </Button>
 
 </RelativeLayout>

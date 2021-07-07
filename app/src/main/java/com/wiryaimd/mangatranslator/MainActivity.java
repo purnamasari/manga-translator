@@ -2,13 +2,16 @@ package com.wiryaimd.mangatranslator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,9 +24,10 @@ import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.TextRecognizerOptions;
-import com.google.mlkit.vision.text.TextRecognizerOptionsInterface;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,10 +36,10 @@ public class MainActivity extends AppCompatActivity {
     // biar bisa download module cv/textrecognition nya, biar ga crash
     // TODO =================================
 
-
     private static final String TAG = "MainActivity";
 
-    private Button btn;
+    private Button btn, save;
+    private CustomImg customImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,60 +47,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn = findViewById(R.id.main_btn);
+        save = findViewById(R.id.main_save);
+        customImg = findViewById(R.id.main_custom);
 
-        Log.d(TAG, "onCreate: start process");
-
-        TextRecognizer textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-
-        btn.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg3);
-                InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
-
-                Task<Text> task = textRecognizer.process(inputImage).addOnCompleteListener(new OnCompleteListener<Text>() {
-                    @Override
-                    public void onComplete(@NonNull @NotNull Task<Text> task) {
-                        String res = task.getResult().getText();
-                        Log.d(TAG, "onComplete: boom bitch: " + res);
-
-                        for (Text.TextBlock block : task.getResult().getTextBlocks()) {
-                            String blockText = block.getText();
-                            Point[] blockCornerPoints = block.getCornerPoints();
-                            Rect blockFrame = block.getBoundingBox();
-                            Log.d(TAG, "onComplete: blockText: " + blockText);
-                            if (blockFrame != null) {
-                                Log.d(TAG, "onComplete: top: " + blockFrame.top);
-                                Log.d(TAG, "onComplete: bottom: " + blockFrame.bottom);
-                                Log.d(TAG, "onComplete: left: " + blockFrame.left);
-                                Log.d(TAG, "onComplete: right: " + blockFrame.right);
-                                Log.d(TAG, "onComplete: \n");
-                            }
-                            for (Text.Line line : block.getLines()) {
-                                String lineText = line.getText();
-                                Log.d(TAG, "onComplete: lineText: " + lineText);
-                                Log.d(TAG, "onComplete: \n");
-                                Point[] lineCornerPoints = line.getCornerPoints();
-                                Rect lineFrame = line.getBoundingBox();
-                                for (Text.Element element : line.getElements()) {
-                                    String elementText = element.getText();
-                                    Log.d(TAG, "onComplete: elemntText: " + elementText);
-                                    Log.d(TAG, "onComplete: \n");
-                                    Point[] elementCornerPoints = element.getCornerPoints();
-                                    Rect elementFrame = element.getBoundingBox();
-                                }
-
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull @NotNull Exception e) {
-                        Log.d(TAG, "onFailure: lahhh napa si anjg");
-                    }
-                });
+                customImg.setDrawingCacheEnabled(true);
+                Bitmap bitmap = customImg.getDrawingCache(true);
+                customImg.saveImage(bitmap, "nognthjkolabiezz");
+                customImg.destroyDrawingCache();
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                String[] perm = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(perm, 0);
+                Log.d(TAG, "onCreate: anjing tai bajsagjaksn dkjakont");
+            }
+        }
     }
 }

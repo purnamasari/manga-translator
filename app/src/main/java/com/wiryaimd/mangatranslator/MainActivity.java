@@ -47,13 +47,20 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: start process");
 
         TextRecognizer textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg3);
+
+        // untuk menghindari memory leaks
+        // bitmap.recycle();
+
+        Log.d(TAG, "onCreate: size bitmap: " + bitmap.getWidth() + " h: " + bitmap.getHeight());
+
+        InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+        Log.d(TAG, "onCreate: size iimg: " + inputImage.getWidth() + " h: " + inputImage.getHeight());
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg3);
-                InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
 
                 Task<Text> task = textRecognizer.process(inputImage).addOnCompleteListener(new OnCompleteListener<Text>() {
                     @Override

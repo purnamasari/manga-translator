@@ -47,13 +47,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: start process");
 
         TextRecognizer textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-        
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg3);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        // options.inJustDecodeBounds = true; // mencegah alokasi memory / ni bitmap ga di simpen di memory dan me return null tapi options width, height nya di set
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg4, options);
+
+        Bitmap bitmapFinal = Bitmap.createScaledBitmap(bitmap, options.outWidth, options.outHeight, true);
 
         // untuk menghindari memory leaks
         // bitmap.recycle();
 
         Log.d(TAG, "onCreate: size bitmap: " + bitmap.getWidth() + " h: " + bitmap.getHeight());
+        Log.d(TAG, "onCreate: size bitmapFinal: " + bitmapFinal.getWidth() + " h: " + bitmapFinal.getHeight());
 
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         Log.d(TAG, "onCreate: size iimg: " + inputImage.getWidth() + " h: " + inputImage.getHeight());

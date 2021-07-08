@@ -13,6 +13,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btn, save;
     private CustomImg customImg;
 
+    private Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,21 +60,31 @@ public class MainActivity extends AppCompatActivity {
         customImg = findViewById(R.id.main_custom);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
+//        options.inMutable = true;
+//        options.inJustDecodeBounds = true; // mungkin bitmap nya ga di simpen di memory
+        Log.d(TAG, "onCreate: size: " + options.outWidth + " " + options.outHeight);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg1, options);
+        Bitmap bitmapTemp = BitmapFactory.decodeResource(getResources(), R.drawable.testimg1, options);
+
+        Log.d(TAG, "onCreate: size: " + options.outWidth + " " + options.outHeight);
+        bitmap = Bitmap.createScaledBitmap(bitmapTemp, options.outWidth, options.outHeight, false);
+
+        bitmapTemp.recycle();
+
+//        Log.d(TAG, "onCreate: bitmap size: " + bitmap.getWidth() + " " + bitmap.getHeight());
+
         Canvas canvas = new Canvas(bitmap);
-
+//
         Paint paint = new Paint();
-        paint.setColor(Color.BLUE);
+        paint.setColor(Color.YELLOW);
 
 //        canvas.drawBitmap(bitmap, 0, 0, null);
-//        canvas.drawRect(80, 80, 450, 400, paint);
+        canvas.drawRect(80, 80, 450, 400, paint);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customImg.saveImage(bitmap, "wtfonthehellisthat");
+                customImg.saveImage(bitmap, "wtfollklknthehellisthat");
                 Log.d(TAG, "onClick: anjeggg");
             }
         });
@@ -86,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
-                String[] perm = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                String[] perm = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                 requestPermissions(perm, 0);
                 Log.d(TAG, "onCreate: anjing tai bajsagjaksn dkjakont");
             }

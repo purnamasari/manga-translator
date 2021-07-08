@@ -16,4 +16,14 @@
 
     </Button>
 
+    <Button
+        android:id="@+id/main_save"
+        android:text="save brohhh"
+        android:layout_below="@id/main_btn"
+        android:layout_width="match_parent"
+        android:layout_margin="12dp"
+        android:layout_height="wrap_content">
+
+    </Button>
+
 </RelativeLayout>

@@ -4,11 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -49,6 +54,26 @@ public class MainActivity extends AppCompatActivity {
         btn = findViewById(R.id.main_btn);
         save = findViewById(R.id.main_save);
         customImg = findViewById(R.id.main_custom);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg1, options);
+        Canvas canvas = new Canvas(bitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);
+
+//        canvas.drawBitmap(bitmap, 0, 0, null);
+//        canvas.drawRect(80, 80, 450, 400, paint);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customImg.saveImage(bitmap, "wtfonthehellisthat");
+                Log.d(TAG, "onClick: anjeggg");
+            }
+        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override

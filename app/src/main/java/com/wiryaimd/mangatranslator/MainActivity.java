@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -16,6 +18,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,14 +31,7 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.TextRecognizerOptions;
 import com.google.mlkit.vision.text.TextRecognizerOptionsInterface;
-import com.huawei.hmf.tasks.OnSuccessListener;
-import com.huawei.hmf.tasks.Task;
-import com.huawei.hms.mlsdk.MLAnalyzerFactory;
-import com.huawei.hms.mlsdk.common.MLFrame;
-import com.huawei.hms.mlsdk.text.MLLocalTextSetting;
-import com.huawei.hms.mlsdk.text.MLText;
-import com.huawei.hms.mlsdk.text.MLTextAnalyzer;
-import com.huawei.hms.mlsdk.text.TextLanguage;
+import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +39,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,26 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btn, save;
 
-    private MLTextAnalyzer mlTextAnalyzer;
+    private TesseractOCR tesseractOCR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         btn = findViewById(R.id.main_btn);
         save = findViewById(R.id.main_save);
 
+        tesseractOCR = new TesseractOCR(MainActivity.this, "eng");
+
         Log.d(TAG, "onCreate: start process");
-
-        MLLocalTextSetting setting = new MLLocalTextSetting.Factory()
-                .setOCRMode(MLLocalTextSetting.OCR_DETECT_MODE)
-                .setLanguage("id")
-                .create();
-
-        mlTextAnalyzer = MLAnalyzerFactory.getInstance().getLocalTextAnalyzer(setting);
-//        TextRecognizer textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
@@ -89,11 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: size bitmap: " + bitmap.getWidth() + " h: " + bitmap.getHeight());
         Log.d(TAG, "onCreate: size bitmapFinal: " + bitmapFinal.getWidth() + " h: " + bitmapFinal.getHeight());
-
-        MLFrame mlFrame = MLFrame.fromBitmap(bitmap);
-
-//        InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
-//        Log.d(TAG, "onCreate: size iimg: " + inputImage.getWidth() + " h: " + inputImage.getHeight());
 
         Canvas canvas = new Canvas(bitmap);
 
@@ -110,74 +97,11 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(perm, 1);
             }
         }
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Task<MLText> task = mlTextAnalyzer.asyncAnalyseFrame(mlFrame);
-                task.addOnSuccessListener(new OnSuccessListener<MLText>() {
-                    @Override
-                    public void onSuccess(MLText mlText) {
-                        Log.d(TAG, "onSuccess: lang: " + mlText.getBlocks().get(0).getLanguage());
-                        Log.d(TAG, "onSuccess: val: " + mlText.getStringValue());
-
-                        for (TextLanguage t : mlText.getBlocks().get(0).getLanguageList()){
-                            Log.d(TAG, "onSuccess: f l: " + t.getLanguage());
-                        }
-                    }
-                });
-
-
-//                Task<Text> task = textRecognizer.process(inputImage).addOnCompleteListener(new OnCompleteListener<Text>() {
-//                    @Override
-//                    public void onComplete(@NonNull @NotNull Task<Text> task) {
-//                        String res = task.getResult().getText();
-//
-//                        Log.d(TAG, "onComplete: boom bitch: " + res);
-//
-//                        for (Text.TextBlock block : task.getResult().getTextBlocks()) {
-//                            String blockText = block.getText();
-//                            Point[] blockCornerPoints = block.getCornerPoints();
-//                            Rect blockFrame = block.getBoundingBox();
-//                            Log.d(TAG, "onComplete: blockText: " + blockText);
-////                            canvas.drawRect(blockFrame, paint);
-//                            if (blockFrame != null) {
-////                                canvas.drawText(blockText.toUpperCase(), blockFrame.left, blockFrame.top, paintText);
-//                                Log.d(TAG, "onComplete: top: " + blockFrame.top);
-//                                Log.d(TAG, "onComplete: bottom: " + blockFrame.bottom);
-//                                Log.d(TAG, "onComplete: left: " + blockFrame.left);
-//                                Log.d(TAG, "onComplete: right: " + blockFrame.right);
-//                                Log.d(TAG, "onComplete: \n");
-//                            }
-//                            for (Text.Line line : block.getLines()) {
-//                                String lineText = line.getText();
-//                                Log.d(TAG, "onComplete: lineText: " + lineText);
-//                                Log.d(TAG, "onComplete: \n");
-//                                Point[] lineCornerPoints = line.getCornerPoints();
-//                                Rect lineFrame = line.getBoundingBox();
-//                                canvas.drawRect(lineFrame, paint);
-//
-//                                if (lineFrame != null){
-//                                    canvas.drawText(lineText.toUpperCase(), lineFrame.left, lineFrame.top, paintText);
-//                                }
-//
-//                                for (Text.Element element : line.getElements()) {
-//                                    String elementText = element.getText();
-//                                    Log.d(TAG, "onComplete: elemntText: " + elementText);
-//                                    Log.d(TAG, "onComplete: \n");
-//                                    Point[] elementCornerPoints = element.getCornerPoints();
-//                                    Rect elementFrame = element.getBoundingBox();
-//                                }
-//
-//                            }
-//                        }
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull @NotNull Exception e) {
-//                        Log.d(TAG, "onFailure: lahhh napa si anjg");
-//                    }
-//                });
+                tesseractOCR.doOCR(bitmap);
             }
         });
 
@@ -209,5 +133,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        tesseractOCR.onDestroy();
     }
 }

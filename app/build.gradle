@@ -40,4 +40,17 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.3.0'
     implementation 'com.google.mlkit:translate:16.1.2'
+
+    implementation 'com.huawei.agconnect:agconnect-core:1.4.0.300'
+
+    implementation 'com.huawei.hms:ml-computer-vision-ocr:2.0.1.300'
+
+    //Latin-based Language Model Package
+    implementation 'com.huawei.hms:ml-computer-vision-ocr-latin-model:2.0.1.300'
+
+    // Import the Japanese and Korean model package.
+    implementation 'com.huawei.hms:ml-computer-vision-ocr-jk-model:2.0.1.300'
+
+    // Import the Chinese and English model package.
+    implementation 'com.huawei.hms:ml-computer-vision-ocr-cn-model:2.0.1.300'
 }

@@ -3,6 +3,9 @@ package com.wiryaimd.mangatranslator;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,7 +30,7 @@ public class TesseractOCR {
 
         String dstPathDir = "/tesseract/tessdata/";
 
-        String srcFile = "eng.traineddata";
+        String srcFile = "jpn.traineddata";
         InputStream inFile = null;
 
         dstPathDir = context.getFilesDir() + dstPathDir;
@@ -85,18 +88,23 @@ public class TesseractOCR {
         }
     }
 
-    public void doOCR(final Bitmap bitmap) {
+    public void doOCR(final Bitmap bitmap, Canvas canvas, Paint paint) {
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                String result = getOCRResult(bitmap);
+                String result = getOCRResult(bitmap, canvas, paint);
                 Log.d(TAG, "run: result: " + result);
             }
         });
     }
 
-    public String getOCRResult(Bitmap bitmap) {
+    public String getOCRResult(Bitmap bitmap, Canvas canvas, Paint paint) {
         mTess.setImage(bitmap);
+        for (Rect rect : mTess.getTextlines().getBoxRects()){
+            canvas.drawRect(rect, paint);
+            Log.d(TAG, "getOCRResult: crott " + rect.left + " " + rect.top);
+            Log.d(TAG, "getOCRResult: ");
+        }
         return mTess.getUTF8Text();
     }
 

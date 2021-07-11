@@ -65,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
         btn = findViewById(R.id.main_btn);
         save = findViewById(R.id.main_save);
 
-        tesseractOCR = new TesseractOCR(MainActivity.this, "eng");
+        tesseractOCR = new TesseractOCR(MainActivity.this, "jpn");
 
         Log.d(TAG, "onCreate: start process");
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         // options.inJustDecodeBounds = true; // mencegah alokasi memory / ni bitmap ga di simpen di memory dan me return null tapi options width, height nya di set
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.testimg1, options);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.asdasdas2, options);
 
         Bitmap bitmapFinal = Bitmap.createScaledBitmap(bitmap, options.outWidth, options.outHeight, true);
 
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tesseractOCR.doOCR(bitmap);
+                tesseractOCR.doOCR(bitmap, canvas, paint);
             }
         });
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                save(bitmap, "ahhaahhh");
+                save(bitmap, "ahhaassshhh");
 
             }
         });
